@@ -4,7 +4,7 @@ library(iGraphMatch)
 registerDoParallel(detectCores()-1)
 set.seed(2)
 df.mds=NULL
-n=500
+n=200
 p <- 0.8
 q <- 0.2
 
@@ -27,8 +27,8 @@ D2_shuffle <- getD(df$Xhat_shuffle)
 D2_shuffle_GM <- getD(df$Xhat_shuffle_GM) 
 
 df.mds <- doMDS(D2,doplot = T)
-df.mds_shuffle <- doMDS(D2_shuffle,doplot = F)
-df.mds_shuffle_GM <- doMDS(D2_shuffle_GM,doplot = F)
+df.mds_shuffle <- doMDS(D2_shuffle,doplot = T)
+df.mds_shuffle_GM <- doMDS(D2_shuffle_GM,doplot = T)
 
 mds <- df.mds$mds
 mds_shuffle <- df.mds_shuffle$mds

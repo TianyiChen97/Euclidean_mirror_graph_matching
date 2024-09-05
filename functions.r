@@ -304,9 +304,3 @@ linf_cp=function(t,y,cp){
 }
 
 
-
-
-
-
-pacman::p_load("doParallel")
-registerDoParallel(detectCores()-4)
