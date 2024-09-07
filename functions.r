@@ -87,17 +87,16 @@ shuffle_graph <- function(A){
   return(G_graph)
 }
 
-graph_mathing <- function(stand,mess){
-  
+graph_mathing <- function(stand,mess,max_it){
   G1=as.matrix( stand )
   G2=as.matrix( mess )
   
-  gm=gm(A=stand,B=mess,start = "rds", max_iter = 20)
+  gm=gm(A=stand,B=mess,start = "rds", max_iter = max_it)
   perm=diag(length(gm[,2]))[gm[,2],]
   
   new_graph=as.matrix(perm%*%as.matrix( mess )%*% t(perm))
   
-  print(c("Pre_Frob=",sqrt(sum((G1-G2)^2)),"Post_Frob=", sqrt(sum((G1-new_graph)^2)) ) )
+  #print(c("Pre_Frob=",sqrt(sum((G1-G2)^2)),"Post_Frob=", sqrt(sum((G1-new_graph)^2)) ) )
   
   return( graph_from_adjacency_matrix(new_graph,mode = 'undirected') )
 }
@@ -308,5 +307,3 @@ linf_cp=function(t,y,cp){
 
 
 
-pacman::p_load("doParallel")
-registerDoParallel(detectCores()-4)
