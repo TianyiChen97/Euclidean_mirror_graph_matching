@@ -208,6 +208,8 @@ out_dd <- foreach (mc = 1:nmc) %do% {
 }
 
 
+load(file = paste0(getwd(), "/data_0911.RData"))
+
 msehat1=Reduce('cbind', lapply(out_dd, "[[", 1)) ## this will summarize tmp1 
 
 sm_mse1=as.data.frame(matrix(0,3,4))
@@ -226,7 +228,6 @@ sm_mse2[,3]=apply(abs(msehat2)^2, 1, mean)+apply(abs(msehat2)^2, 1, sd)*1.96/sqr
 sm_mse2[,4]=1:3
 
 sm_mse2
-
 
 msehat3=Reduce('cbind', lapply(out_dd, "[[", 3))
 
@@ -249,8 +250,20 @@ library(ggplot2)
 plottt <- ggplot(sm_mse_all, aes(x=V4, y=V2, color=type, linetype=type)) + 
   geom_line() +
   geom_errorbar(aes(ymin=V1, ymax=V3)) +
-  scale_x_continuous(breaks = mm) +
-  labs(y='relative MSE', x='d', color='Type', linetype='Type') +
+  scale_x_continuous(breaks = 1:3) +
+  labs(y='relative MSE', x='MDS embedding dim d for the (d -> 1)-iso-mirror', color='Type', linetype='Type') +
   theme(axis.text=element_text(size=25), axis.title=element_text(size=25, face="bold"))
-print(plottt)
 
+
+plottt <- plottt + labs(title = paste("p =", p, "q =", q, "n =", n, "nmc =", nmc, 'max_iter=', 10))
+plottt <- plottt + theme(
+  axis.text = element_text(size = 25),
+  axis.title = element_text(size = 25, face = "bold"),
+  legend.text = element_text(size = 25),
+  legend.title = element_text(size = 25, face = "bold"),
+  plot.title = element_text(size = 30, face = "bold") 
+)
+
+
+
+print(plottt)
