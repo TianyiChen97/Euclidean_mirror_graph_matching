@@ -23,29 +23,40 @@ df <- doSim_shuffle(n,tmax,delta,p,q,tstar,startpoint = stp)
 df <- df %>% mutate(Xhat = map(g, function(x) full.ase(x,2)$Xhat[,1,drop=F]))%>% 
   mutate (num_e=map(g, ~sum(as.matrix(.x)))) %>%
   mutate(Xhat_shuffle = map(shuffle_g, function(x) full.ase(x,2)$Xhat[,1,drop=F])) %>%
-  mutate(shuffle_g_GM = map(shuffle_g, ~graph_mathing(shuffle_g[[1]],.x,100))) %>%
-  mutate(Xhat_shuffle_GM = map(shuffle_g_GM, function(x) full.ase(x,2)$Xhat[,1,drop=F]))
+  mutate(shuffle_g_GM_alltoone = map(shuffle_g, ~graph_mathing(shuffle_g[[1]],.x,100))) %>%
+  mutate(shuffle_g_GM_pairwise = purrr::accumulate(shuffle_g[-1],
+                                          .f = function(acc, curr) graph_mathing(acc, curr, 50),
+                                          .init = shuffle_g[[1]]))%>%  # Sequential matching with correction
+  mutate(Xhat_shuffle_GM_alltoone = map(shuffle_g_GM_alltoone, function(x) full.ase(x,2)$Xhat[,1,drop=F]))%>%
+  mutate(Xhat_shuffle_GM_pairwise = map(shuffle_g_GM_pairwise, function(x) full.ase(x,2)$Xhat[,1,drop=F]))
 
 D2 <- getD(df$Xhat) 
-D2_shuffle <- getD(df$Xhat_shuffle) 
-D2_shuffle_GM <- getD(df$Xhat_shuffle_GM) 
+D2_shuffle <- getD(df$Xhat_shuffle)
+D2_shuffle_GM_alltoone <- getD(df$Xhat_shuffle_GM_alltoone)
+D2_shuffle_GM_pairwise <- getD(df$Xhat_shuffle_GM_pairwise) 
 
-df.mds <- doMDS(D2,doplot = F)
+par(mfrow=c(1,3))
+df.mds <- doMDS(D2,doplot = T)
 df.mds_shuffle <- doMDS(D2_shuffle,doplot = F)
-df.mds_shuffle_GM <- doMDS(D2_shuffle_GM,doplot = F)
+df.mds_shuffle_GM_alltoone <- doMDS(D2_shuffle_GM_alltoone,doplot = F)
+df.mds_shuffle_GM_pairwise <- doMDS(D2_shuffle_GM_pairwise,doplot = F)
 
 mds <- df.mds$mds
 mds_shuffle <- df.mds_shuffle$mds
-mds_shuffle_GM <- df.mds_shuffle_GM$mds
+mds_shuffle_GM_alltoone <- df.mds_shuffle_GM_alltoone$mds
+mds_shuffle_GM_pairwise <- df.mds_shuffle_GM_pairwise$mds
 
 df.iso <- doIso(mds, mdsd=1)
 df.iso_shuffle <- doIso(mds_shuffle, mdsd=1)
-df.iso_shuffle_GM <- doIso(mds_shuffle_GM, mdsd=1)
+df.iso_shuffle_GM_alltoone <- doIso(mds_shuffle_GM_alltoone, mdsd=1)
+df.iso_shuffle_GM_pairwise <- doIso(mds_shuffle_GM_pairwise, mdsd=1)
 
-par(mfrow=c(1,3))
+par(mfrow=c(1,4))
 plot(1:tmax,df.iso$iso)
 plot(1:tmax,df.iso_shuffle$iso)
-plot(1:tmax,df.iso_shuffle_GM$iso)
+plot(1:tmax,df.iso_shuffle_GM_alltoone$iso)
+plot(1:tmax,df.iso_shuffle_GM_pairwise$iso)
+
 
 linf_error=function(x){
   obf=NULL
@@ -161,6 +172,9 @@ plottt <- ggplot(sm_mse_all, aes(x=V4, y=V2, color=type, linetype=type)) +
   labs(y='relative MSE', x='m', color='Type', linetype='Type') +
   theme(axis.text=element_text(size=25), axis.title=element_text(size=25, face="bold"))
 print(plottt)
+
+
+
 
 
 
