@@ -207,10 +207,10 @@ out_dd <- foreach (mc = 1:nmc) %do% {
   mds_shuffle_GM_pairwise <- df.mds_shuffle_GM_pairwise$mds
 
   for (dd in 1:3){
-      df.iso <- doIso(mds, mdsd=d)
-      df.iso_shuffle <- doIso(mds_shuffle, mdsd=d)
-      df.iso_shuffle_GM_alltoone <- doIso(mds_shuffle_GM_alltoone, mdsd=d)
-      df.iso_shuffle_GM_pairwise <- doIso(mds_shuffle_GM_pairwise, mdsd=d)
+      df.iso <- doIso(mds, mdsd=dd)
+      df.iso_shuffle <- doIso(mds_shuffle, mdsd=dd)
+      df.iso_shuffle_GM_alltoone <- doIso(mds_shuffle_GM_alltoone, mdsd=dd)
+      df.iso_shuffle_GM_pairwise <- doIso(mds_shuffle_GM_pairwise, mdsd=dd)
 
       tmp1[dd]=linf_error(df.iso$iso)
       tmp2[dd]=linf_error(df.iso_shuffle$iso)
