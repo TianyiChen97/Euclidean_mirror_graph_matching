@@ -303,7 +303,11 @@ linf_cp=function(t,y,cp){
 }
 
 
-
-
-
-
+linf_error=function(x){
+  obf=NULL
+  for (nk in 2:(tmax-1)) { ## find the point which minimize the obj func Sk, that is the change point 
+  obf[nk]=linf_cp(1:tmax,x,nk)[1]
+  }
+  ecp=min(which(obf==min(obf[-1])))
+  return((ecp-tstar)/tmax)
+}
