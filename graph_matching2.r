@@ -109,7 +109,7 @@ out <- foreach (mc = 1:nmc) %do% {
   list(tmp1,tmp2,tmp3)
 }
 
-save.image(file = paste0(getwd(), "/data.RData"))
+save.image(file = paste0(getwd(), "/data_0923.RData"))
 
 
 
@@ -167,15 +167,15 @@ print(plottt)
 
 
 
-n=200
+n=300
 p <- 0.4
 q <- 0.3
 m <- tmax <- 10
 stp=0.2
 delta <- (1-stp)/tmax
 tstar <- tmax/2
-nmc=20
-max_iter=10
+nmc=200
+max_iter=100
 
 out_dd <- foreach (mc = 1:nmc) %do% {
 
@@ -217,13 +217,11 @@ out_dd <- foreach (mc = 1:nmc) %do% {
       tmp3[dd]=linf_error(df.iso_shuffle_GM_alltoone$iso)
       tmp4[dd]=linf_error(df.iso_shuffle_GM_pairwise$iso)
     }
-  print(c(mc,tmp1,tmp2,tmp3,tmp4,'           '))
+  print(c(mc,tmp1,tmp2,tmp3,tmp4))
   list(tmp1,tmp2,tmp3,tmp4)
 }
 
 
-
-#load(file = paste0(getwd(), "/data_0911.RData"))
 
 msehat1=Reduce('cbind', lapply(out_dd, "[[", 1)) ## this will summarize tmp1 
 
