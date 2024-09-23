@@ -157,31 +157,58 @@ doMDS <- function(D, doplot=TRUE)
   df.mds <- tibble(ind=1:tmax, time=sprintf("%2d",1:tmax), x=mds[,1], y=mds[,2], z=mds[,3], w=mds[,4])
   
   if (doplot) {
-    plot(apply(mds,2,sd), type="b", main="", xlab="dimension", ylab="column stdev")
+    # Convert the result of apply(mds, 2, sd) into a data frame for ggplot
+    sd_data <- data.frame(
+      dimension = 1:ncol(mds),  # Assumes mds is a matrix or data frame
+      column_sd = apply(mds, 2, sd)
+    )
     
-    p1 <- df.mds %>% ggplot(aes(x=ind, y=x, color=time, group=1)) +
-      geom_point(size=3) + geom_line() +
+    # First plot: standard deviation by dimension (converted to ggplot)
+    p0 <- ggplot(sd_data, aes(x = dimension, y = column_sd)) +
+      geom_point() +
+      geom_line() +
+      labs(x = "dimension", y = "column stdev") +
+      theme_minimal()
+    
+    # Second plot: MDS1 vs time
+    p1 <- df.mds %>%
+      ggplot(aes(x=ind, y=x, color=time, group=1)) +
+      geom_point(size=3) +
+      geom_line() +
       geom_vline(xintercept = tstar, linetype="dashed") +
-      theme(legend.position = "none") + labs(x="time",y="mds1") #+
-    print(p1)
+      theme(legend.position = "none") +
+      labs(x="time", y="mds1")
     
-    p1 <- df.mds %>% ggplot(aes(x=ind, y=y, color=time, group=1)) +
-      geom_point(size=3) + geom_line() +
+    # Third plot: MDS2 vs time
+    p2 <- df.mds %>%
+      ggplot(aes(x=ind, y=y, color=time, group=1)) +
+      geom_point(size=3) +
+      geom_line() +
       geom_vline(xintercept = tstar, linetype="dashed") +
-      theme(legend.position = "none") + labs(x="time",y="mds2") #+
-    print(p1)
+      theme(legend.position = "none") +
+      labs(x="time", y="mds2")
     
-    p1 <- df.mds %>% ggplot(aes(x=ind, y=z, color=time, group=1)) +
-      geom_point(size=3) + geom_line() +
+    # Fourth plot: MDS3 vs time
+    p3 <- df.mds %>%
+      ggplot(aes(x=ind, y=z, color=time, group=1)) +
+      geom_point(size=3) +
+      geom_line() +
       geom_vline(xintercept = tstar, linetype="dashed") +
-      theme(legend.position = "none") + labs(x="time",y="mds3") #+
-    print(p1)
+      theme(legend.position = "none") +
+      labs(x="time", y="mds3")
     
-    p2 <- df.mds %>% ggplot(aes(x=x, y=y, color=time)) +
+    # Fifth plot: MDS1 vs MDS2
+    p4 <- df.mds %>%
+      ggplot(aes(x=x, y=y, color=time)) +
       geom_point(size=3) +
       geom_label_repel(aes(label=time), size=2) +
-      theme(legend.position = "none") + labs(x="mds1",y="mds2") #+
-    print(p2)
+      theme(legend.position = "none") +
+      labs(x="mds1", y="mds2")
+    
+    # Arrange all four ggplots in a 1x4 grid
+    grid.arrange(p0, p1, p2, p3, ncol=4)
+    
+    
   }
   
   return(list(mds=mds, df.mds=df.mds))
